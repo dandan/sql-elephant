@@ -1,15 +1,20 @@
 package org.laeng.app.sql_elephant;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
 import org.laeng.app.sql_elephant.writer.CSV;
+import org.yaml.snakeyaml.Yaml;
 
 import com.mysql.jdbc.Connection;
-
 
 public class Dumper {
 
@@ -20,32 +25,38 @@ public class Dumper {
 
 	public void dump() throws SQLException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException, IOException {
-		connection = db_connection();
+		Map<String, String> config = readConfig(new File("config/dump.yml"));
+		connection = db_connection(config);
 
 		Statement stmt = connection.createStatement(
 				java.sql.ResultSet.TYPE_FORWARD_ONLY,
 				java.sql.ResultSet.CONCUR_READ_ONLY);
 		stmt.setFetchSize(Integer.MIN_VALUE);
-		String selectquery = "select * from companies c1, companies c2 limit 100000";
+		String selectquery = config.get("export_sql");
 
 		ResultSet rs = stmt.executeQuery(selectquery);
 		(new CSV()).write_from_resultset(rs);
 		connection.close();
 	}
 
-	public static Connection db_connection() throws SQLException,
+	public static Connection db_connection(Map<String, String> config) throws SQLException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+
 		Connection connection = null;
-		String url = "jdbc:mysql://localhost:3306/";
-		String dbName = "amee_profile_development";
-		String driverName = "com.mysql.jdbc.Driver";
-		String userName = "root";
-		String password = "rootytooty";
-		Class.forName(driverName).newInstance();
-		connection = (Connection) DriverManager.getConnection(url + dbName, userName,
-				password);
+		Class.forName(config.get("db_driver")).newInstance();
+		connection = (Connection) DriverManager.getConnection(
+				config.get("db_url"), config.get("db_user"), config.get("db_password"));
 		return (connection);
+	}
+
+	private Map<String, String> readConfig(File configFile)
+			throws FileNotFoundException {
+		InputStream input = new FileInputStream(configFile);
+		Yaml yaml = new Yaml();
+		@SuppressWarnings("unchecked")
+		Map<String, String> map = (Map<String, String>) yaml.load(input);
+		return map;
 	}
 
 }
