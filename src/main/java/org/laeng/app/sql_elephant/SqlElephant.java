@@ -17,17 +17,9 @@ public class SqlElephant {
 	public SqlElephant() {
 	}
 
-	public static void main(String[] args) {
-		try {
-			new SqlElephant().dump_to_csv();
-		} catch (Exception e) {
-			System.out.println("Fatal Exception during dump");
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-
-	public static Connection db_connection() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+	public static Connection db_connection() throws SQLException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		Connection connection = null;
 		String url = "jdbc:mysql://localhost:3306/";
 		String dbName = "amee_profile_development";
@@ -37,51 +29,53 @@ public class SqlElephant {
 		Class.forName(driverName).newInstance();
 		connection = DriverManager.getConnection(url + dbName, userName,
 				password);
-		return(connection);
+		return (connection);
 	}
 
-	public void dump_to_csv() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
-		connection = db_connection(); 
+	public void dump_to_csv() throws SQLException, InstantiationException,
+			IllegalAccessException, ClassNotFoundException, IOException {
+		connection = db_connection();
 
-		Statement stmt = connection.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
-	              java.sql.ResultSet.CONCUR_READ_ONLY);
+		Statement stmt = connection.createStatement(
+				java.sql.ResultSet.TYPE_FORWARD_ONLY,
+				java.sql.ResultSet.CONCUR_READ_ONLY);
 		stmt.setFetchSize(Integer.MIN_VALUE);
 		String selectquery = "select * from companies c1, companies c2 limit 100000";
-		
+
 		ResultSet rs = stmt.executeQuery(selectquery);
 		write_csv_from_resultset(rs);
 		connection.close();
 	}
-	
-	private void write_csv_from_resultset(ResultSet rs) throws SQLException, IOException {
-	    CSVWriter writer = new CSVWriter(new FileWriter("out.csv"), ',');
-	    
-	    ResultSetMetaData meta = rs.getMetaData();
-	    int colCount = meta.getColumnCount();
+
+	private void write_csv_from_resultset(ResultSet rs) throws SQLException,
+			IOException {
+		CSVWriter writer = new CSVWriter(new FileWriter("out.csv"), ',');
+
+		ResultSetMetaData meta = rs.getMetaData();
+		int colCount = meta.getColumnCount();
 		String[] rowArray = new String[colCount];
-	    Object cell = null;
-		
-	    String[] columnNames = new String[colCount];
-	    for (int i = 1; i < colCount; i++) {
-	      String columnName = meta.getColumnName(i);
-	      columnNames[i-1] = columnName;
-	    }
-	    writer.writeNext(columnNames);
-	    
+		Object cell = null;
+
+		String[] columnNames = new String[colCount];
+		for (int i = 1; i < colCount; i++) {
+			String columnName = meta.getColumnName(i);
+			columnNames[i - 1] = columnName;
+		}
+		writer.writeNext(columnNames);
+
 		while (rs.next()) {
-			
+
 			for (int i = 0; i < colCount; i++) {
 				cell = rs.getObject(i + 1);
 				rowArray[i] = cell == null ? null : cell.toString();
-	        }
-			
+			}
+
 			writer.writeNext(rowArray);
 			// System.out.print("ID :" + rs.getInt(1) + " ");
 			// System.out.println("Name :" + rs.getString(2));
 		}
 
-	    
-	    writer.close();		
+		writer.close();
 	}
 
 }
