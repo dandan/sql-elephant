@@ -23,9 +23,32 @@ public class Dumper {
 	public Dumper() {
 	}
 
-	public void dump() throws SQLException, InstantiationException,
+	/**
+	 * Dump query to file as defined in the configFile
+	 * @param configFile
+	 * @throws SQLException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public void dump(File configFile) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+		Map<String, String> config = readConfig(configFile);
+		dump(config);
+	}
+	
+	
+	/**
+	 * Dump query to a file as defined in the config Map
+	 * @param config
+	 * @throws SQLException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public void dump(Map<String, String> config) throws SQLException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException, IOException {
-		Map<String, String> config = readConfig(new File("config/dump.yml"));
 		connection = db_connection(config);
 
 		Statement stmt = connection.createStatement(
@@ -39,6 +62,20 @@ public class Dumper {
 		connection.close();
 	}
 
+	/**
+	 * Connect to the DB using the connection parameters in the map
+	 * Connection Params in config:
+	 * - db_url: jdbc:mysql://localhost:3306/amee_profile_development
+	 * - db_driver: com.mysql.jdbc.Driver
+	 * - db_user: database user
+	 * - db_password: password
+	 * @param config
+	 * @return
+	 * @throws SQLException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 */
 	public static Connection db_connection(Map<String, String> config) throws SQLException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
@@ -50,6 +87,12 @@ public class Dumper {
 		return (connection);
 	}
 
+	/**
+	 * Read configuration from yaml file
+	 * @param configFile
+	 * @return configuration map
+	 * @throws FileNotFoundException
+	 */
 	private Map<String, String> readConfig(File configFile)
 			throws FileNotFoundException {
 		InputStream input = new FileInputStream(configFile);
