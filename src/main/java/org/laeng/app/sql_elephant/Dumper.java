@@ -58,7 +58,7 @@ public class Dumper {
 		String selectquery = config.get("export_sql");
 
 		ResultSet rs = stmt.executeQuery(selectquery);
-		(new CSV()).write_from_resultset(rs);
+		(new CSV()).writeFromResultSet(rs, new File("out.csv"));
 		connection.close();
 	}
 
