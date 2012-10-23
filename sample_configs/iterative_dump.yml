@@ -5,6 +5,12 @@ db_password:
 
 output_file: output.csv
 
+batch_size: 50000
+
+iterate_sql: select id from companies order by id asc
+
 export_sql: |
-  select * 
-  from companies c1, companies c2 limit 998
+  select c.* 
+  from companies c
+  where c.id >= ?
+  and c.id <= ?

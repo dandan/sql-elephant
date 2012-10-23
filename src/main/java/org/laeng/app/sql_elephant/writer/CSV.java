@@ -12,89 +12,93 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 public class CSV {
 
-	/**
-	 * Iterate over a result set and print each row to a CSV file
-	 * 
-	 * @param rs
-	 * @throws SQLException
-	 * @throws IOException
-	 */
-	public void writeFromResultSet(ResultSet rs, File file) throws SQLException,
-			IOException {
-		writeFromResultSet(rs, new FileWriter(file));
-	}
-	
-	/**
-	 * Iterate over a result set and print each row to a CSV file
-	 * 
-	 * @param rs
-	 * @throws SQLException
-	 * @throws IOException
-	 */
-	public void writeFromResultSet(ResultSet rs, Writer writer) throws SQLException,
-			IOException {
-		CSVWriter csvWriter = new CSVWriter(writer, ',');
+    /**
+     * Iterate over a result set and print each row to a CSV file
+     * 
+     * @param rs
+     * @throws SQLException
+     * @throws IOException
+     */
+    public void writeFromResultSet(ResultSet rs, File file) throws SQLException, IOException {
+        Writer writer = new FileWriter(file);
+        writeFromResultSet(rs, writer);
+        writer.close();
+    }
 
-		int colCount = getColumnCount(rs);
-		writeHeader(csvWriter, rs, colCount);
-		writeData(csvWriter, rs, colCount);
-		csvWriter.close();
-	}
+    public void writeFromResultSet(ResultSet rs, Writer writer) throws SQLException, IOException {
+        writeFromResultSet(rs, writer, true);
+    }
 
-	/**
-	 * Get column count from result set
-	 * 
-	 * @param rs
-	 * @return
-	 * @throws SQLException
-	 */
-	private int getColumnCount(ResultSet rs) throws SQLException {
-		ResultSetMetaData meta = rs.getMetaData();
-		return meta.getColumnCount();
-	}
+    /**
+     * Iterate over a result set and print each row to a CSV file
+     * 
+     * @param rs
+     * @throws SQLException
+     * @throws IOException
+     */
+    public void writeFromResultSet(ResultSet rs, Writer writer, boolean outputHeader)
+            throws SQLException, IOException {
+        CSVWriter csvWriter = new CSVWriter(writer, ',');
 
-	/**
-	 * Write header row to CSV
-	 * 
-	 * @param writer
-	 * @param rs
-	 * @param colCount
-	 * @throws SQLException
-	 */
-	private void writeHeader(CSVWriter writer, ResultSet rs, int colCount)
-			throws SQLException {
-		ResultSetMetaData meta = rs.getMetaData();
+        int colCount = getColumnCount(rs);
+        if (outputHeader)
+            writeHeader(csvWriter, rs, colCount);
+        writeData(csvWriter, rs, colCount);
+        // csvWriter.close();
+    }
 
-		String[] columnNames = new String[colCount];
-		for (int i = 1; i <= colCount; i++) {
-			String columnName = meta.getColumnName(i);
-			columnNames[i - 1] = columnName;
-		}
-		writer.writeNext(columnNames);
-	}
+    /**
+     * Get column count from result set
+     * 
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
+    private int getColumnCount(ResultSet rs) throws SQLException {
+        ResultSetMetaData meta = rs.getMetaData();
+        return meta.getColumnCount();
+    }
 
-	/**
-	 * Write all body rows to CSV
-	 * 
-	 * @param writer
-	 * @param rs
-	 * @param colCount
-	 * @throws SQLException
-	 */
-	private void writeData(CSVWriter writer, ResultSet rs, int colCount)
-			throws SQLException {
+    /**
+     * Write header row to CSV
+     * 
+     * @param writer
+     * @param rs
+     * @param colCount
+     * @throws SQLException
+     */
+    private void writeHeader(CSVWriter writer, ResultSet rs, int colCount) throws SQLException {
+        ResultSetMetaData meta = rs.getMetaData();
 
-		Object cell = null;
-		String[] rowArray = new String[colCount];
+        String[] columnNames = new String[colCount];
+        for (int i = 1; i <= colCount; i++) {
+            String columnName = meta.getColumnName(i);
+            columnNames[i - 1] = columnName;
+        }
+        writer.writeNext(columnNames);
+    }
 
-		while (rs.next()) {
+    /**
+     * Write all body rows to CSV
+     * 
+     * @param writer
+     * @param rs
+     * @param colCount
+     * @throws SQLException
+     */
+    private void writeData(CSVWriter writer, ResultSet rs, int colCount) throws SQLException {
 
-			for (int i = 0; i < colCount; i++) {
-				cell = rs.getObject(i + 1);
-				rowArray[i] = cell == null ? null : cell.toString();
-			}
+        Object cell = null;
+        String[] rowArray = new String[colCount];
 
-			writer.writeNext(rowArray);
-		}
-	}
+        while (rs.next()) {
+
+            for (int i = 0; i < colCount; i++) {
+                cell = rs.getObject(i + 1);
+                rowArray[i] = cell == null ? null : cell.toString();
+            }
+
+            writer.writeNext(rowArray);
+        }
+    }
 }
