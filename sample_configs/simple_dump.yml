@@ -1,0 +1,8 @@
+db_url: jdbc:mysql://localhost:3306/amee_profile_development
+db_driver: com.mysql.jdbc.Driver
+db_user: amee
+db_password:
+
+export_sql: |
+  select * 
+  from companies c1, companies c2 limit 998
