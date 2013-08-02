@@ -72,7 +72,7 @@ public class CSV {
 
         String[] columnNames = new String[colCount];
         for (int i = 1; i <= colCount; i++) {
-            String columnName = meta.getColumnName(i);
+            String columnName = meta.getColumnLabel(i);
             columnNames[i - 1] = columnName;
         }
         writer.writeNext(columnNames);
