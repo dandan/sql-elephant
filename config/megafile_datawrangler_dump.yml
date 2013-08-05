@@ -16,6 +16,8 @@ export_sql: |
   crn as national_identification_number,
   national_identification_system_code,
   uksic07 as uk_sic_2007,
+  location_indicator,
+  false as global_ultimate,
   trad_ad1 as street_address_1,
   trad_ad2 as street_address_2,
   trad_ad3 as street_address_3,
