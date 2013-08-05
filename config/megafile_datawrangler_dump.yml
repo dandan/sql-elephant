@@ -1,0 +1,53 @@
+db_url: jdbc:mysql://calum.c2bryi0pfxhi.us-east-1.rds.amazonaws.com:3306/master_data
+db_driver: com.mysql.jdbc.Driver
+db_user: root
+db_password: #edit me
+
+output_file: companies.csv
+
+batch_size: 50000
+
+iterate_sql: select amee_company_id from tmp_profile_data order by amee_company_id asc
+
+export_sql: |
+  select
+  amee_company_id,
+  co_trad_name as "name",
+  crn as national_identification_number,
+  national_identification_system_code,
+  uksic07 as uk_sic_2007,
+  trad_ad1 as street_address_1,
+  trad_ad2 as street_address_2,
+  trad_ad3 as street_address_3,
+  trad_ad4 as street_address_4,
+  trad_postcode as postcode,
+  trad_ad5 as city,
+  trad_county as province_name,
+  'GB' as country_code,
+
+  emissions as emissions_total,
+  emissions_scope1,
+  emissions_scope2,
+  crc_emissions_tonnes_co2 as emissions_crc,
+  emissions_source as emissions_status,
+  water_withdrawn,
+  water_discharged,
+  water_source as water_status,
+  waste_hazardous,
+  waste_non_hazardous,
+  waste_source as waste_status,
+  waste_source as waste_status,
+  sustainability_url as sustainability_report_url,
+  amee_score_group,
+  "no_data" as amee_score_status,
+
+  turnover as annual_sales_local,
+  totass as total_assets_local,
+  employment as employees_total,
+  'GBP' as currency_code
+
+  from tmp_profile_data c
+  where c.amee_company_id >= ?
+  and c.amee_company_id <= ?
+
+
