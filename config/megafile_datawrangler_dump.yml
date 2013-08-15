@@ -39,6 +39,7 @@ export_sql: |
   waste_non_hazardous,
   waste_source as waste_status,
   waste_source as waste_status,
+  "2011-12-31" as environmental_data_period_end,
   sustainability_url as sustainability_report_url,
   amee_score_group,
   "no_data" as amee_score_status,
