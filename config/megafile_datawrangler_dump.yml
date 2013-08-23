@@ -38,16 +38,25 @@ export_sql: |
   waste_hazardous,
   waste_non_hazardous,
   waste_source as waste_status,
-  waste_source as waste_status,
   "2011-12-31" as environmental_data_period_end,
   sustainability_url as sustainability_report_url,
   amee_score_group,
-  "no_data" as amee_score_status,
+  if(score_d=0, null, score_d) as amee_industry_score,
+  1000000*(emissions/turnover) as financial_intensity,
 
   turnover as annual_sales_local,
   totass as total_assets_local,
   employment as employees_total,
-  'GBP' as currency_code
+  'GBP' as currency_code,
+  case banded_delphi_risk_score
+    when 'a. Unknown (Grey)' then null
+    when 'b. Very High Risk (Red)' then 1
+    when 'c. High Risk (Amber)' then 2
+    when 'd. Above Average Risk (Yellow)' then 3
+    when 'd. Below Average Risk (Green)' then 4
+    when 'e. Low Risk (Green)' then 5
+    else null
+  end as financial_score
 
   from tmp_profile_data c
   where c.amee_company_id >= ?
