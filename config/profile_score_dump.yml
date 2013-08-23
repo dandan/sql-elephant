@@ -1,4 +1,4 @@
-db_url: jdbc:mysql://profile-staging2.c2bryi0pfxhi.us-east-1.rds.amazonaws.com:3306/amee_profile
+db_url: jdbc:mysql://profile.c2bryi0pfxhi.us-east-1.rds.amazonaws.com:3306/amee_profile
 db_driver: com.mysql.jdbc.Driver
 db_user: amee_profile
 db_password: #edit me
@@ -7,7 +7,7 @@ output_file: score.csv
 
 batch_size: 50000
 
-iterate_sql: select amee_company_id from companies order by amee_company_id asc
+iterate_sql: select amee_company_id from companies where hidden=false order by amee_company_id asc
 
 export_sql: |
   select
@@ -22,4 +22,5 @@ export_sql: |
   from companies c
   where c.amee_company_id >= ?
   and c.amee_company_id <= ?
+  and hidden=false
 
