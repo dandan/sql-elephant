@@ -41,8 +41,8 @@ export_sql: |
   "2011-12-31" as environmental_data_period_end,
   sustainability_url as sustainability_report_url,
   amee_score_group,
-  if(score_d=0, null, score_d) as amee_industry_score,
-  1000000*(emissions/turnover) as financial_intensity,
+  -- if(score_d=0, null, score_d) as amee_industry_score,
+  -- 1000000*(emissions/turnover) as financial_intensity,
 
   turnover as annual_sales_local,
   totass as total_assets_local,
