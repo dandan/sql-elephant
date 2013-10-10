@@ -17,7 +17,9 @@ export_sql: |
   national_identification_system_code,
   uksic07 as uk_sic_2007,
   location_indicator,
-  false as global_ultimate,
+  if(ult_amee_id = 0, null, ult_amee_id) as gup_amee_company_id,
+  weburl as company_website_url,
+  phone as telephone,
   trad_ad1 as street_address_1,
   trad_ad2 as street_address_2,
   trad_ad3 as street_address_3,
@@ -26,6 +28,9 @@ export_sql: |
   trad_ad5 as city,
   trad_county as province_name,
   'GB' as country_code,
+  bornyr as established_at,
+  ceo_title,
+  ceo_name,
 
   emissions as emissions_total,
   emissions_scope1,
@@ -47,16 +52,10 @@ export_sql: |
   turnover as annual_sales_local,
   totass as total_assets_local,
   employment as employees_total,
+  networth as net_worth,
+  ptprof as profit,
   'GBP' as currency_code,
-  case banded_delphi_risk_score
-    when 'a. Unknown (Grey)' then null
-    when 'b. Very High Risk (Red)' then 1
-    when 'c. High Risk (Amber)' then 2
-    when 'd. Above Average Risk (Yellow)' then 3
-    when 'd. Below Average Risk (Green)' then 4
-    when 'e. Low Risk (Green)' then 5
-    else null
-  end as financial_score
+  financial_score
 
   from tmp_profile_data c
   where c.amee_company_id >= ?
