@@ -7,17 +7,17 @@ output_file: companies.csv
 
 batch_size: 50000
 
-iterate_sql: select amee_company_id from tmp_profile_data order by amee_company_id asc
+iterate_sql: select amee_company_id from tmp_profile_data_sep_20131023 order by amee_company_id asc
 
 export_sql: |
   select
   amee_company_id,
   co_trad_name as "name",
   crn as national_identification_number,
-  national_identification_system_code,
+  if(crn is null or crn = '', null, 12) as national_identification_system_code,
   uksic07 as uk_sic_2007,
   location_indicator,
-  if(ult_amee_id = 0, null, ult_amee_id) as gup_amee_company_id,
+  -- if(ult_parent = 0, null, ult_parent) as gup_amee_company_id,
   weburl as company_website_url,
   phone as telephone,
   trad_ad1 as street_address_1,
@@ -28,9 +28,19 @@ export_sql: |
   trad_ad5 as city,
   trad_county as province_name,
   'GB' as country_code,
-  bornyr as established_at,
+  date(bornyr) as established_at,
   ceo_title,
   ceo_name,
+  reg_name as registered_name,
+  if(length(pad_desc) < 100, pad_desc, null) as description,
+  reg_ad1 as registered_street_address_1,
+  reg_ad2 as registered_street_address_2,
+  reg_ad3 as registered_street_address_3,
+  reg_ad4 as registered_street_address_4,
+  reg_postcode as registered_postcode,
+  reg_town as registered_city,
+  reg_county as registered_province_name,
+  'GB' as registered_country_code,
 
   emissions as emissions_total,
   emissions_scope1,
@@ -43,21 +53,34 @@ export_sql: |
   waste_hazardous,
   waste_non_hazardous,
   waste_source as waste_status,
-  "2011-12-31" as environmental_data_period_end,
+  if(emissions_source="modelled", "2012-12-31", "2011-12-31") as environmental_data_period_end,
   sustainability_url as sustainability_report_url,
   amee_score_group,
   -- if(score_d=0, null, score_d) as amee_industry_score,
   -- 1000000*(emissions/turnover) as financial_intensity,
 
-  turnover as annual_sales_local,
-  totass as total_assets_local,
-  employment as employees_total,
-  networth as net_worth,
-  ptprof as profit,
+  if(turnover='', null, turnover) as annual_sales_local,
+  date(finex) as annual_sales_local_date,
+  if(totass='', null, totass) as total_assets_local,
+  date(finex) as total_assets_local_date,
+  if(employment='', null, employment) as employees_total,
+  date(finex) as employees_total_date,
+  if(networth='', null, networth) as net_worth,
+  date(finex) as net_worth_date,
+  if(ptprof='', null, ptprof) as profit,
+  date(finex) as profit_date,
+  if(dormant='D','dormant',if(non_trading='r','non-trading','active')) as trading_status,
+  case sal_type
+    when 'A' then 'sourced'
+    when 'M' then 'modelled'
+    when 'B' then 'modelled'
+    when 'U' then 'no_data'
+    else 'no_data'
+    end as sales_status,
   'GBP' as currency_code,
   financial_score
 
-  from tmp_profile_data c
+  from tmp_profile_data_sep_20131023 c
   where c.amee_company_id >= ?
   and c.amee_company_id <= ?
 
