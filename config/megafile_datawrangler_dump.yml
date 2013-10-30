@@ -7,7 +7,7 @@ output_file: companies.csv
 
 batch_size: 50000
 
-iterate_sql: select amee_company_id from tmp_profile_data_sep_20131023 order by amee_company_id asc
+iterate_sql: select amee_company_id from tmp_profile_data_sep_20131029 order by amee_company_id asc
 
 export_sql: |
   select
@@ -15,7 +15,7 @@ export_sql: |
   co_trad_name as "name",
   crn as national_identification_number,
   if(crn is null or crn = '', null, 12) as national_identification_system_code,
-  uksic07 as uk_sic_2007,
+  if(uksic07 = 0, null, uksic07) as uk_sic_2007,
   location_indicator,
   -- if(ult_parent = 0, null, ult_parent) as gup_amee_company_id,
   weburl as company_website_url,
@@ -32,7 +32,7 @@ export_sql: |
   ceo_title,
   ceo_name,
   reg_name as registered_name,
-  if(length(pad_desc) < 100, pad_desc, null) as description,
+  if(substr(pad_desc, -1) = '.', pad_desc, null) as description,
   reg_ad1 as registered_street_address_1,
   reg_ad2 as registered_street_address_2,
   reg_ad3 as registered_street_address_3,
@@ -53,7 +53,7 @@ export_sql: |
   waste_hazardous,
   waste_non_hazardous,
   waste_source as waste_status,
-  if(emissions_source="modelled", "2012-12-31", "2011-12-31") as environmental_data_period_end,
+  if(emissions_source="modelled", date("2012-12-31"), date("2011-12-31")) as environmental_data_period_end,
   sustainability_url as sustainability_report_url,
   amee_score_group,
   -- if(score_d=0, null, score_d) as amee_industry_score,
@@ -80,7 +80,7 @@ export_sql: |
   'GBP' as currency_code,
   financial_score
 
-  from tmp_profile_data_sep_20131023 c
+  from tmp_profile_data_sep_20131029 c
   where c.amee_company_id >= ?
   and c.amee_company_id <= ?
 
