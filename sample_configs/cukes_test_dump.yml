@@ -1,0 +1,17 @@
+db_url: jdbc:mysql://localhost:3306/data_wrangler_cucumber
+db_driver: com.mysql.jdbc.Driver
+db_user: root
+db_password:
+
+output_file: companies.csv
+
+batch_size: 1
+
+iterate_sql: select id from SQL_ELEPHANT_TEST order by id asc
+
+export_sql: |
+  select *
+  from SQL_ELEPHANT_TEST
+  where id >= ?
+  and id <= ?
+  limit 998

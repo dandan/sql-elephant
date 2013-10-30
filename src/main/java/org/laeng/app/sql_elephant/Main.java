@@ -9,7 +9,7 @@ public class Main {
 		String USAGE = String.format("%s <config_file>\n", System.getProperty("sun.java.command"));
 		
 		if (args.length != 1) {
-			System.out.println("Exactly 1 argument required\n");
+			System.out.println("Exactly 1 argument required: we need a config file!\n");
 			System.out.println(USAGE);
 			System.exit(1);
 		}

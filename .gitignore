@@ -4,4 +4,7 @@ tmp/
 target/
 out.csv
 output.csv
+companies.csv
+.idea/
+*.iml
 

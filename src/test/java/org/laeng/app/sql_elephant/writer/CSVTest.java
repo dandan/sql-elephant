@@ -39,8 +39,8 @@ public class CSVTest extends TestCase {
 		
 		when(rs.getMetaData()).thenReturn(meta);
 		when(meta.getColumnCount()).thenReturn(2);
-		when(meta.getColumnName(1)).thenReturn("id");
-		when(meta.getColumnName(2)).thenReturn("name");
+		when(meta.getColumnLabel(1)).thenReturn("id");
+		when(meta.getColumnLabel(2)).thenReturn("name");
 
 		StringWriter stringWriter = new StringWriter();
 		

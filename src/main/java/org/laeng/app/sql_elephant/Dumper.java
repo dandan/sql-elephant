@@ -95,9 +95,9 @@ public class Dumper {
                 minId = id;
 
             if (batchPos == batchSize) {
-                batchCount++;
                 System.out.printf("Outputting batch %d -- IDs: %d-%d\n", batchCount, minId.longValue(), id.longValue());
-                dumpIterativeBatch(preparedStatement, writer, minId.longValue(), id.longValue(), (batchCount == 1));
+                dumpIterativeBatch(preparedStatement, writer, minId.longValue(), id.longValue(), (batchCount == 0));
+                batchCount++;
                 batchPos = 0;
                 minId = null;
                 id = null;
@@ -105,7 +105,7 @@ public class Dumper {
         }
         if (minId != null) {
             System.out.printf("Outputting batch %d -- IDs: %d-%d\n", batchCount, minId.longValue(), id.longValue());
-            dumpIterativeBatch(preparedStatement, writer, minId.longValue(), id.longValue(), (batchCount == 1));
+            dumpIterativeBatch(preparedStatement, writer, minId.longValue(), id.longValue(), (batchCount == 0));
         }
         
         writer.close();
